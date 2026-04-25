@@ -1,76 +1,70 @@
-const questions = [
-    { yomi: "あいさつ", kanji: "挨拶" },
-    { yomi: "ゆううつ", kanji: "憂鬱" }
-];
-
-let currentIndex = 0;
-const canvas = document.getElementById('draw-area');
-const ctx = canvas.getContext('2d');
-let drawing = false;
-
-// --- 手書き機能のセットアップ ---
-function setupCanvas() {
-    ctx.lineWidth = 4;
-    ctx.lineCap = 'round';
-    ctx.strokeStyle = '#333';
-
-    const startDraw = (e) => {
-        drawing = true;
-        draw(e);
-    };
-    const endDraw = () => {
-        drawing = false;
-        ctx.beginPath();
-    };
-    const draw = (e) => {
-        if (!drawing) return;
-        const rect = canvas.getBoundingClientRect();
-        const x = (e.clientX || e.touches[0].clientX) - rect.left;
-        const y = (e.clientY || e.touches[0].clientY) - rect.top;
-
-        ctx.lineTo(x, y);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-        e.preventDefault();
-    };
-
-    canvas.addEventListener('mousedown', startDraw);
-    canvas.addEventListener('mousemove', draw);
-    canvas.addEventListener('mouseup', endDraw);
-    canvas.addEventListener('touchstart', startDraw);
-    canvas.addEventListener('touchmove', draw);
-    canvas.addEventListener('touchend', endDraw);
+body { 
+    background: #f0f2f5; 
+    font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif; 
+    margin: 0; 
+    padding: 20px; 
+    touch-action: none; 
 }
 
-function clearCanvas() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+#test-container { 
+    max-width: 700px; 
+    margin: auto; 
+    background: white; 
+    padding: 30px; 
+    border-radius: 12px; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
 }
 
-// --- ゲーム進行 ---
-function showQuestion() {
-    document.getElementById("yomi-display").innerText = questions[currentIndex].yomi;
-    document.getElementById("answer-zone").style.display = "none";
-    document.getElementById("show-ans-btn").style.display = "inline-block";
-    clearCanvas();
+h1 { text-align: center; color: #333; border-bottom: 3px solid #333; padding-bottom: 10px; }
+.instruction { text-align: center; color: #666; font-size: 0.9rem; margin-bottom: 30px; }
+
+.question-item { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: flex-start; 
+    padding: 25px 0; 
+    border-bottom: 1px solid #eee; 
 }
 
-function showAnswer() {
-    document.getElementById("correct-kanji").innerText = questions[currentIndex].kanji;
-    document.getElementById("answer-zone").style.display = "block";
-    document.getElementById("show-ans-btn").style.display = "none";
+.yomi { 
+    font-size: 1.3rem; 
+    font-weight: bold; 
+    margin-bottom: 10px; 
+    color: #444; 
 }
 
-function nextQuestion(isCorrect) {
-    currentIndex++;
-    if (currentIndex < questions.length) {
-        showQuestion();
-    } else {
-        alert("終了です！");
-        currentIndex = 0;
-        showQuestion();
-    }
+canvas { 
+    border: 2px solid #999; 
+    background: #fff; 
+    border-radius: 5px;
+    cursor: crosshair; 
+    /* 見た目のサイズを指定 */
+    width: 100%; 
+    max-width: 400px; 
+    height: 120px; 
 }
 
-setupCanvas();
-showQuestion();
+.ans-text { 
+    color: #e63946; 
+    font-size: 2.5rem; 
+    font-weight: bold; 
+    display: none; 
+    margin-top: 15px; 
+    letter-spacing: 5px;
+}
+
+.footer-controls { margin-top: 40px; text-align: center; }
+
+button { 
+    padding: 15px 40px; 
+    font-size: 1.2rem; 
+    font-weight: bold;
+    cursor: pointer; 
+    border: none; 
+    border-radius: 50px; 
+    transition: 0.3s;
+}
+
+#finish-btn { background: #007bff; color: white; }
+#finish-btn:hover { background: #0056b3; }
+#reset-btn { background: #6c757d; color: white; }
