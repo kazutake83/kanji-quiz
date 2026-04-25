@@ -1,70 +1,73 @@
-body { 
-    background: #f0f2f5; 
-    font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif; 
-    margin: 0; 
-    padding: 20px; 
-    touch-action: none; 
+// 問題データ（ここを書き換えれば問題が変わります）
+const questions = [
+    { yomi: "1. あいさつ", kanji: "挨拶" }, { yomi: "2. ゆううつ", kanji: "憂鬱" },
+    { yomi: "3. きれい", kanji: "綺麗" }, { yomi: "4. しょほうせん", kanji: "処方箋" },
+    { yomi: "5. かんかく", kanji: "感覚" }, { yomi: "6. ほうしゅう", kanji: "報酬" },
+    { yomi: "7. ぼういんぼうしょく", kanji: "暴飲暴食" }, { yomi: "8. けいこうとう", kanji: "蛍光灯" },
+    { yomi: "9. かんれき", kanji: "還暦" }, { yomi: "10. じょうじゅ", kanji: "成就" },
+    { yomi: "11. いんぺい", kanji: "隠蔽" }, { yomi: "12. ほうがん", kanji: "包含" },
+    { yomi: "13. せんさい", kanji: "繊細" }, { yomi: "14. ほしょう", kanji: "保証" },
+    { yomi: "15. ほうかい", kanji: "崩壊" }, { yomi: "16. いろう", kanji: "遺漏" },
+    { yomi: "17. しんちょく", kanji: "進捗" }, { yomi: "18. かいり", kanji: "乖離" },
+    { yomi: "19. しょうじん", kanji: "精進" }, { yomi: "20. ほうじゅん", kanji: "芳醇" }
+];
+
+const listEl = document.getElementById('questions-list');
+
+// 画面に問題を並べる
+questions.forEach((q, index) => {
+    const div = document.createElement('div');
+    div.className = 'question-item';
+    div.innerHTML = `
+        <div class="yomi">${q.yomi}</div>
+        <canvas id="canvas-${index}" width="500" height="150"></canvas>
+        <div class="ans-text" id="ans-${index}">${q.kanji}</div>
+    `;
+    listEl.appendChild(div);
+    setupCanvas(`canvas-${index}`);
+});
+
+function setupCanvas(id) {
+    const canvas = document.getElementById(id);
+    const ctx = canvas.getContext('2d');
+    let drawing = false;
+
+    ctx.lineWidth = 4;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = '#333';
+
+    const getPos = (e) => {
+        const rect = canvas.getBoundingClientRect();
+        // 画面上の表示サイズと実際のキャンバス解像度の比率を計算
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        return {
+            x: ((e.clientX || (e.touches && e.touches[0].clientX)) - rect.left) * scaleX,
+            y: ((e.clientY || (e.touches && e.touches[0].clientY)) - rect.top) * scaleY
+        };
+    };
+
+    const start = (e) => { drawing = true; ctx.beginPath(); const p = getPos(e); ctx.moveTo(p.x, p.y); };
+    const move = (e) => { 
+        if (!drawing) return; 
+        const p = getPos(e); 
+        ctx.lineTo(p.x, p.y); 
+        ctx.stroke(); 
+        if (e.touches) e.preventDefault(); 
+    };
+    const stop = () => { drawing = false; };
+
+    canvas.addEventListener('mousedown', start);
+    canvas.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', stop);
+    canvas.addEventListener('touchstart', start, {passive: false});
+    canvas.addEventListener('touchmove', move, {passive: false});
+    canvas.addEventListener('touchend', stop);
 }
 
-#test-container { 
-    max-width: 700px; 
-    margin: auto; 
-    background: white; 
-    padding: 30px; 
-    border-radius: 12px; 
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+function finishTest() {
+    document.querySelectorAll('.ans-text').forEach(el => el.style.display = 'block');
+    document.getElementById('finish-btn').style.display = 'none';
+    document.getElementById('reset-btn').style.display = 'inline-block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-
-h1 { text-align: center; color: #333; border-bottom: 3px solid #333; padding-bottom: 10px; }
-.instruction { text-align: center; color: #666; font-size: 0.9rem; margin-bottom: 30px; }
-
-.question-item { 
-    display: flex; 
-    flex-direction: column; 
-    align-items: flex-start; 
-    padding: 25px 0; 
-    border-bottom: 1px solid #eee; 
-}
-
-.yomi { 
-    font-size: 1.3rem; 
-    font-weight: bold; 
-    margin-bottom: 10px; 
-    color: #444; 
-}
-
-canvas { 
-    border: 2px solid #999; 
-    background: #fff; 
-    border-radius: 5px;
-    cursor: crosshair; 
-    /* 見た目のサイズを指定 */
-    width: 100%; 
-    max-width: 400px; 
-    height: 120px; 
-}
-
-.ans-text { 
-    color: #e63946; 
-    font-size: 2.5rem; 
-    font-weight: bold; 
-    display: none; 
-    margin-top: 15px; 
-    letter-spacing: 5px;
-}
-
-.footer-controls { margin-top: 40px; text-align: center; }
-
-button { 
-    padding: 15px 40px; 
-    font-size: 1.2rem; 
-    font-weight: bold;
-    cursor: pointer; 
-    border: none; 
-    border-radius: 50px; 
-    transition: 0.3s;
-}
-
-#finish-btn { background: #007bff; color: white; }
-#finish-btn:hover { background: #0056b3; }
-#reset-btn { background: #6c757d; color: white; }
