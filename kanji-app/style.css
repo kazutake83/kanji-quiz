@@ -1,0 +1,8 @@
+body { text-align: center; font-family: sans-serif; background: #fafafa; touch-action: none; }
+#yomi-display { font-size: 2rem; margin: 20px; color: #555; }
+#draw-area { border: 2px solid #333; background: #fff; border-radius: 8px; cursor: crosshair; }
+.controls { margin: 20px; }
+#correct-kanji { font-size: 4rem; color: red; font-family: "Sawarabi Mincho", serif; }
+button { padding: 10px 20px; font-size: 1rem; margin: 5px; cursor: pointer; }
+.ok-btn { background: #e1f5fe; border: 1px solid #03a9f4; }
+.ng-btn { background: #ffebee; border: 1px solid #f44336; }

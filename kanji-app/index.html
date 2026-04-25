@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>手書き漢字テスト</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <p id="yomi-display">読み込み中...</p>
+        
+        <canvas id="draw-area" width="300" height="300"></canvas>
+        
+        <div class="controls">
+            <button onclick="clearCanvas()">書き直す</button>
+            <button id="show-ans-btn" onclick="showAnswer()">正解を表示</button>
+        </div>
+
+        <div id="answer-zone" style="display:none;">
+            <p id="correct-kanji"></p>
+            <p>合っていましたか？</p>
+            <button class="ok-btn" onclick="nextQuestion(true)">◯ 正解</button>
+            <button class="ng-btn" onclick="nextQuestion(false)">× 不正解</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
