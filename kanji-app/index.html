@@ -3,25 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>手書き漢字テスト</title>
+    <title>20問 漢字書き取りテスト</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="game-container">
-        <p id="yomi-display">読み込み中...</p>
+    <div id="test-container">
+        <h1>漢字書き取りテスト (20問)</h1>
+        <p class="instruction">下の枠に漢字を書いてください。最後にまとめて答え合わせができます。</p>
         
-        <canvas id="draw-area" width="300" height="300"></canvas>
-        
-        <div class="controls">
-            <button onclick="clearCanvas()">書き直す</button>
-            <button id="show-ans-btn" onclick="showAnswer()">正解を表示</button>
-        </div>
+        <div id="questions-list">
+            </div>
 
-        <div id="answer-zone" style="display:none;">
-            <p id="correct-kanji"></p>
-            <p>合っていましたか？</p>
-            <button class="ok-btn" onclick="nextQuestion(true)">◯ 正解</button>
-            <button class="ng-btn" onclick="nextQuestion(false)">× 不正解</button>
+        <div class="footer-controls">
+            <button id="finish-btn" onclick="finishTest()">答え合わせをする</button>
+            <button id="reset-btn" onclick="location.reload()" style="display:none;">最初からやり直す</button>
         </div>
     </div>
     <script src="script.js"></script>
