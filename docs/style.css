@@ -1,110 +1,134 @@
-body { 
-    background: #f0f2f5; 
-    font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif; 
-    margin: 0; 
-    padding: 20px; 
-    touch-action: none; 
+body {
+    background-color: #f0f2f5;
+    font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    margin: 0;
 }
 
-#test-container { 
-    max-width: 700px; 
-    margin: auto; 
-    background: white; 
-    padding: 30px; 
-    border-radius: 12px; 
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+#test-container {
+    width: 100%;
+    max-width: 600px;
 }
 
-h1 { text-align: center; color: #333; border-bottom: 3px solid #333; padding-bottom: 10px; }
-.instruction { text-align: center; color: #666; font-size: 0.9rem; margin-bottom: 30px; }
-
-.question-item { 
-    display: flex; 
-    flex-direction: column; 
-    align-items: flex-start; 
-    padding: 25px 0; 
-    border-bottom: 1px solid #eee; 
+h1 {
+    text-align: center;
+    color: #333;
 }
 
-.yomi { 
-    font-size: 1.3rem; 
-    font-weight: bold; 
-    margin-bottom: 10px; 
-    color: #444; 
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
 }
 
-canvas { 
-    border: 2px solid #999; 
-    background: #fff; 
-    border-radius: 5px;
-    cursor: crosshair; 
-    /* 見た目のサイズを指定 */
-    width: 100%; 
-    max-width: 400px; 
-    height: 120px; 
+/* 設定エリアのスタイル */
+#settings {
+    text-align: center;
 }
 
-.ans-text { 
-    color: #e63946; 
-    font-size: 2.5rem; 
-    font-weight: bold; 
-    display: none; 
-    margin-top: 15px; 
-    letter-spacing: 5px;
+.setting-row {
+    margin: 15px 0;
 }
 
-.footer-controls { margin-top: 40px; text-align: center; }
+input[type="number"] {
+    width: 60px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+}
 
-button { 
-    padding: 15px 40px; 
-    font-size: 1.2rem; 
+#start-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-size: 18px;
     font-weight: bold;
-    cursor: pointer; 
-    border: none; 
-    border-radius: 50px; 
+    cursor: pointer;
     transition: 0.3s;
 }
 
-#finish-btn { background: #007bff; color: white; }
-#finish-btn:hover { background: #0056b3; }
-#reset-btn { background: #6c757d; color: white; }
-/* style.css の末尾に追加 */
-#settings {
-    background: #f0f4f8;
+#start-btn:hover { background-color: #0056b3; }
+
+/* 問題のスタイル */
+.question-item {
+    background: white;
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     margin-bottom: 20px;
-    text-align: center;
 }
-.setting-item {
-    margin-bottom: 10px;
-}
-input[type="number"] {
-    width: 50px;
-    padding: 5px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-}
-#start-btn {
-    background-color: #28a745;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
+
 .question-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
 }
+
+.yomi {
+    font-size: 20px;
+    font-weight: bold;
+    color: #444;
+}
+
+/* ★四角い書き込み枠★ */
+canvas {
+    background-color: #fff;
+    border: 2px solid #333; /* ここで四角く囲っています */
+    border-radius: 8px;
+    display: block;
+    width: 100%;
+    touch-action: none;
+    cursor: crosshair;
+}
+
 .clear-btn {
-    background: #6c757d;
+    background: #e0e0e0;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.ans-text {
+    margin-top: 15px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #d9534f;
+    display: none;
+    text-align: center;
+    border-top: 1px dashed #ccc;
+    padding-top: 10px;
+}
+
+/* 下部ボタン */
+#finish-btn {
+    display: block;
+    width: 100%;
+    background-color: #007bff;
     color: white;
     border: none;
-    padding: 3px 10px;
-    border-radius: 3px;
-    font-size: 12px;
+    padding: 15px;
+    border-radius: 30px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#reset-btn {
+    display: block;
+    width: 100%;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 30px;
+    font-size: 18px;
     cursor: pointer;
 }
