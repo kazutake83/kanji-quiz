@@ -1,3 +1,73 @@
+body { 
+    background: #f0f2f5; 
+    font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif; 
+    margin: 0; 
+    padding: 20px; 
+    touch-action: none; 
+}
+
+#test-container { 
+    max-width: 700px; 
+    margin: auto; 
+    background: white; 
+    padding: 30px; 
+    border-radius: 12px; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+}
+
+h1 { text-align: center; color: #333; border-bottom: 3px solid #333; padding-bottom: 10px; }
+.instruction { text-align: center; color: #666; font-size: 0.9rem; margin-bottom: 30px; }
+
+.question-item { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: flex-start; 
+    padding: 25px 0; 
+    border-bottom: 1px solid #eee; 
+}
+
+.yomi { 
+    font-size: 1.3rem; 
+    font-weight: bold; 
+    margin-bottom: 10px; 
+    color: #444; 
+}
+
+canvas { 
+    border: 2px solid #999; 
+    background: #fff; 
+    border-radius: 5px;
+    cursor: crosshair; 
+    /* 見た目のサイズを指定 */
+    width: 100%; 
+    max-width: 400px; 
+    height: 120px; 
+}
+
+.ans-text { 
+    color: #e63946; 
+    font-size: 2.5rem; 
+    font-weight: bold; 
+    display: none; 
+    margin-top: 15px; 
+    letter-spacing: 5px;
+}
+
+.footer-controls { margin-top: 40px; text-align: center; }
+
+button { 
+    padding: 15px 40px; 
+    font-size: 1.2rem; 
+    font-weight: bold;
+    cursor: pointer; 
+    border: none; 
+    border-radius: 50px; 
+    transition: 0.3s;
+}
+
+#finish-btn { background: #007bff; color: white; }
+#finish-btn:hover { background: #0056b3; }
+#reset-btn { background: #6c757d; color: white; }
 /* style.css の末尾に追加 */
 #settings {
     background: #f0f4f8;
