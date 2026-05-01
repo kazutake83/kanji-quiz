@@ -1,4 +1,3 @@
-// 問題データ
 const allQuestions = [
     { yomi: "1. あいさつ", kanji: "挨拶" }, { yomi: "2. ゆううつ", kanji: "憂鬱" },
     { yomi: "3. きれい", kanji: "綺麗" }, { yomi: "4. しょほうせん", kanji: "処方箋" },
@@ -12,17 +11,13 @@ const allQuestions = [
     { yomi: "19. しょうじん", kanji: "精進" }, { yomi: "20. ほうじゅん", kanji: "芳醇" }
 ];
 
-// 「テスト開始」ボタンで動く関数
 function startTest() {
     const startVal = parseInt(document.getElementById('range-start').value) - 1;
     const endVal = parseInt(document.getElementById('range-end').value);
     const countVal = parseInt(document.getElementById('question-count').value);
 
-    // 範囲内の問題を取り出す
     let selected = allQuestions.slice(startVal, endVal);
-    // ランダムに並び替え
     selected.sort(() => Math.random() - 0.5);
-    // 指定数だけ取り出す
     selected = selected.slice(0, countVal);
 
     const listEl = document.getElementById('questions-list');
@@ -43,15 +38,15 @@ function startTest() {
         setupCanvas(`canvas-${index}`);
     });
 
-    // 画面表示の切り替え
     document.getElementById('settings').style.display = 'none';
-    document.getElementById('finish-btn').style.display = 'inline-block';
+    document.getElementById('finish-btn').style.display = 'block';
 }
 
 function setupCanvas(id) {
     const canvas = document.getElementById(id);
     const ctx = canvas.getContext('2d');
     let drawing = false;
+
     ctx.lineWidth = 4;
     ctx.lineCap = 'round';
     ctx.strokeStyle = '#333';
@@ -67,7 +62,13 @@ function setupCanvas(id) {
     };
 
     const start = (e) => { drawing = true; ctx.beginPath(); const p = getPos(e); ctx.moveTo(p.x, p.y); };
-    const move = (e) => { if (!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); if (e.touches) e.preventDefault(); };
+    const move = (e) => { 
+        if (!drawing) return; 
+        const p = getPos(e); 
+        ctx.lineTo(p.x, p.y); 
+        ctx.stroke(); 
+        if (e.touches) e.preventDefault(); 
+    };
     const stop = () => { drawing = false; };
 
     canvas.addEventListener('mousedown', start);
@@ -87,5 +88,5 @@ function clearCanvas(index) {
 function finishTest() {
     document.querySelectorAll('.ans-text').forEach(el => el.style.display = 'block');
     document.getElementById('finish-btn').style.display = 'none';
-    document.getElementById('reset-btn').style.display = 'inline-block';
+    document.getElementById('reset-btn').style.display = 'block';
 }
