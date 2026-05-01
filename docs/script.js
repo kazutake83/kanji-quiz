@@ -1,4 +1,4 @@
-// script.js の中身（全体をこれに入れ替えてください）
+// 問題データ
 const allQuestions = [
     { yomi: "1. あいさつ", kanji: "挨拶" }, { yomi: "2. ゆううつ", kanji: "憂鬱" },
     { yomi: "3. きれい", kanji: "綺麗" }, { yomi: "4. しょほうせん", kanji: "処方箋" },
@@ -12,21 +12,19 @@ const allQuestions = [
     { yomi: "19. しょうじん", kanji: "精進" }, { yomi: "20. ほうじゅん", kanji: "芳醇" }
 ];
 
+// 「テスト開始」ボタンで動く関数
 function startTest() {
-    const start = parseInt(document.getElementById('range-start').value) - 1;
-    const end = parseInt(document.getElementById('range-end').value);
-    const count = parseInt(document.getElementById('question-count').value);
+    const startVal = parseInt(document.getElementById('range-start').value) - 1;
+    const endVal = parseInt(document.getElementById('range-end').value);
+    const countVal = parseInt(document.getElementById('question-count').value);
 
-    // ① 指定された範囲の問題を取り出す
-    let selected = allQuestions.slice(start, end);
-
-    // ② シャッフル（ランダムにする）
+    // 範囲内の問題を取り出す
+    let selected = allQuestions.slice(startVal, endVal);
+    // ランダムに並び替え
     selected.sort(() => Math.random() - 0.5);
+    // 指定数だけ取り出す
+    selected = selected.slice(0, countVal);
 
-    // ③ 指定された問題数だけ残す
-    selected = selected.slice(0, count);
-
-    // 画面をリセットして作り直す
     const listEl = document.getElementById('questions-list');
     listEl.innerHTML = "";
     
@@ -45,19 +43,11 @@ function startTest() {
         setupCanvas(`canvas-${index}`);
     });
 
-    // ボタンの表示切り替え
+    // 画面表示の切り替え
     document.getElementById('settings').style.display = 'none';
     document.getElementById('finish-btn').style.display = 'inline-block';
 }
 
-// キャンバスを消去する機能（①の要望）
-function clearCanvas(index) {
-    const canvas = document.getElementById(`canvas-${index}`);
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-}
-
-// setupCanvas関数は前回と同じものを使います（省略せず全部貼り付けてください）
 function setupCanvas(id) {
     const canvas = document.getElementById(id);
     const ctx = canvas.getContext('2d');
@@ -86,6 +76,12 @@ function setupCanvas(id) {
     canvas.addEventListener('touchstart', start, {passive: false});
     canvas.addEventListener('touchmove', move, {passive: false});
     canvas.addEventListener('touchend', stop);
+}
+
+function clearCanvas(index) {
+    const canvas = document.getElementById(`canvas-${index}`);
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
 function finishTest() {
