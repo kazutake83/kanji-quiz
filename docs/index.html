@@ -1,24 +1,14 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>20問 漢字書き取りテスト</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div id="test-container">
-        <h1>漢字書き取りテスト (20問)</h1>
-        <p class="instruction">下の枠に漢字を書いてください。最後にまとめて答え合わせができます。</p>
-        
-        <div id="questions-list"></div>
+<h1>漢字書き取りテスト</h1>
 
-        <div class="footer-controls">
-            <button id="finish-btn" onclick="finishTest()">答え合わせをする</button>
-            <button id="reset-btn" onclick="location.reload()" style="display:none;">最初からやり直す</button>
-        </div>
+<div id="settings">
+    <div class="setting-item">
+        範囲：<input type="number" id="range-start" value="1" min="1" max="20"> 〜 
+        <input type="number" id="range-end" value="20" min="1" max="20">
     </div>
+    <div class="setting-item">
+        問題数：<input type="number" id="question-count" value="10" min="1" max="20">
+    </div>
+    <button id="start-btn" onclick="startTest()">テスト開始！</button>
+</div>
 
-    <script src="script.js"></script>
-</body>
-</html>
+<div id="questions-list"></div>
