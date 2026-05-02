@@ -12,7 +12,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             const parts = row.split(',');
             return { yomi: parts[1], kanji: parts[2] };
         });
-    } catch (e) { console.error("CSV読み込みエラー", e); }
+        } catch (e) { console.error("CSV読み込みエラー", e); }
 
     // 2. ダークモード切り替えイベント
     const darkToggle = document.getElementById('dark-mode-toggle');
