@@ -1,134 +1,76 @@
+/* 基本の色（ライトモード） */
+:root {
+    --bg-color: #f0f2f5;
+    --card-bg: #ffffff;
+    --text-color: #333333;
+    --canvas-bg: #ffffff;
+    --canvas-border: #333333;
+    --stroke-color: #333333;
+}
+
+/* ダークモードの色 */
+body.dark-mode {
+    --bg-color: #1a1a1a;
+    --card-bg: #2d2d2d;
+    --text-color: #f0f0f0;
+    --canvas-bg: #3d3d3d;
+    --canvas-border: #666666;
+    --stroke-color: #ffffff;
+}
+
 body {
-    background-color: #f0f2f5;
-    font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: sans-serif;
     display: flex;
     justify-content: center;
     padding: 20px;
     margin: 0;
-}
-
-#test-container {
-    width: 100%;
-    max-width: 600px;
-}
-
-h1 {
-    text-align: center;
-    color: #333;
-}
-
-.card {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
-}
-
-/* 設定エリアのスタイル */
-#settings {
-    text-align: center;
-}
-
-.setting-row {
-    margin: 15px 0;
-}
-
-input[type="number"] {
-    width: 60px;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 16px;
-}
-
-#start-btn {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 12px 30px;
-    border-radius: 25px;
-    font-size: 18px;
-    font-weight: bold;
-    cursor: pointer;
     transition: 0.3s;
 }
 
-#start-btn:hover { background-color: #0056b3; }
-
-/* 問題のスタイル */
-.question-item {
-    background: white;
+.card, .question-item {
+    background: var(--card-bg);
+    color: var(--text-color);
     padding: 20px;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     margin-bottom: 20px;
+    transition: 0.3s;
 }
 
-.question-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-}
-
-.yomi {
-    font-size: 20px;
-    font-weight: bold;
-    color: #444;
-}
-
-/* ★四角い書き込み枠★ */
 canvas {
-    background-color: #fff;
-    border: 2px solid #333; /* ここで四角く囲っています */
+    background-color: var(--canvas-bg);
+    border: 2px solid var(--canvas-border);
     border-radius: 8px;
     display: block;
     width: 100%;
-    touch-action: none;
-    cursor: crosshair;
 }
 
-.clear-btn {
-    background: #e0e0e0;
-    border: none;
-    padding: 5px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-}
+/* スコアと○×ボタン */
+#score-text { color: #007bff; }
+body.dark-mode #score-text { color: #4da3ff; }
 
-.ans-text {
+.check-controls {
     margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.check-btn {
     font-size: 24px;
-    font-weight: bold;
-    color: #d9534f;
-    display: none;
-    text-align: center;
-    border-top: 1px dashed #ccc;
-    padding-top: 10px;
-}
-
-/* 下部ボタン */
-#finish-btn {
-    display: block;
-    width: 100%;
-    background-color: #007bff;
-    color: white;
+    padding: 10px 40px;
     border: none;
-    padding: 15px;
-    border-radius: 30px;
-    font-size: 18px;
-    font-weight: bold;
+    border-radius: 10px;
     cursor: pointer;
 }
+.btn-ok { background: #d4edda; color: #155724; }
+.btn-ng { background: #f8d7da; color: #721c24; }
+.btn-ok.active { background: #28a745; color: white; }
+.btn-ng.active { background: #dc3545; color: white; }
 
-#reset-btn {
-    display: block;
-    width: 100%;
-    background-color: #6c757d;
-    color: white;
-    border: none;
-    padding: 15px;
-    border-radius: 30px;
-    font-size: 18px;
+.switch-label {
     cursor: pointer;
+    font-weight: bold;
 }
