@@ -3,30 +3,29 @@ let allQuestions = [];
 // 1. ページが読み込まれたら自動的にCSVを取得する
 window.addEventListener('DOMContentLoaded', async () => {
     try {
-        // GitHubにアップした questions.csv を読み込む
-        // ※ fetchは同じフォルダ内のファイルを探しに行きます
         const response = await fetch('questions.csv');
         if (!response.ok) throw new Error('CSVファイルが見つかりません');
         
         const text = await response.text();
         
-        // テキストを行ごとに分解
-        const rows = text.trim().split('\n');
+        // 改行コード（Windows/Mac両対応）で分割し、余計な空白を消す
+        const rows = text.trim().split(/\r?\n/);
         
-        // 1行目（ヘッダー）を飛ばして、データを配列に入れる
-        allQuestions = rows.slice(1).map(row => {
-            // カンマで分割。 [番号, 問題文, 漢字] の順番を想定
-            const parts = row.split(',');
-            return {
-                yomi: parts[1] ? parts[1].trim() : "",
-                kanji: parts[2] ? parts[2].trim() : ""
-            };
-        }).filter(q => q.yomi !== ""); // 空の行を除去
+        // ★修正ポイント：1行目(見出し)を確実に飛ばし、空の行も完全に除外する
+        allQuestions = rows
+            .slice(1) // 1行目(number,yomi,kanji)を捨てる
+            .filter(row => row.trim() !== "" && row.includes(',')) // 空行やカンマのない行を捨てる
+            .map(row => {
+                const parts = row.split(',');
+                return {
+                    yomi: parts[1] ? parts[1].trim() : "",
+                    kanji: parts[2] ? parts[2].trim() : ""
+                };
+            });
 
-        console.log("問題の読み込みに成功しました！", allQuestions);
+        console.log("読み込み成功。問題数:", allQuestions.length);
     } catch (e) {
-        console.error("データの読み込み中にエラーが発生しました:", e);
-        alert("問題データの読み込みに失敗しました。GitHubに questions.csv があるか確認してください。");
+        console.error("エラー:", e);
     }
 });
 
