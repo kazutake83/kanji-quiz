@@ -5,6 +5,7 @@ let results = [];
 window.addEventListener('DOMContentLoaded', async () => {
     // 1. CSV読み込み
     try {
+        // 先ほど一括変換したCSVファイル名を指定（questions.csvにリネームして使うならそのままでOK）
         const response = await fetch('questions.csv');
         const text = await response.text();
         const rows = text.trim().split(/\r?\n/);
@@ -12,7 +13,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             const parts = row.split(',');
             return { yomi: parts[1], kanji: parts[2] };
         });
-        } catch (e) { console.error("CSV読み込みエラー", e); }
+    } catch (e) { console.error("CSV読み込みエラー", e); }
 
     // 2. ダークモード切り替えイベント
     const darkToggle = document.getElementById('dark-mode-toggle');
@@ -26,6 +27,13 @@ window.addEventListener('DOMContentLoaded', async () => {
     // 4. 答え合わせボタン
     document.getElementById('finish-btn').addEventListener('click', finishTest);
 });
+
+// 問題文の {カタカナ} を装飾する関数
+function formatQuestion(text) {
+    if (!text) return "";
+    // { } で囲まれた部分を <b><u> </u></b> に置き換える
+    return text.replace(/\{(.+?)\}/g, '<b><u>$1</u></b>');
+}
 
 function startTest() {
     const startVal = parseInt(document.getElementById('range-start').value) - 1;
@@ -43,9 +51,13 @@ function startTest() {
     selected.forEach((q, index) => {
         const div = document.createElement('div');
         div.className = 'question-item';
+        
+        // フォーマット済みの問題文を作成
+        const formattedYomi = formatQuestion(q.yomi);
+
         div.innerHTML = `
             <div class="question-header">
-                <div class="yomi"><strong>${q.yomi}</strong></div>
+                <div class="yomi"><strong>${formattedYomi}</strong></div>
                 <button class="clear-btn" onclick="clearCanvas(${index})">消去</button>
             </div>
             <canvas id="canvas-${index}" width="500" height="150"></canvas>
@@ -61,6 +73,7 @@ function startTest() {
 
     document.getElementById('settings').style.display = 'none';
     document.getElementById('finish-btn').style.display = 'block';
+    document.getElementById('score-container').style.display = 'none'; // 新規開始時にスコアを隠す
 }
 
 function setupCanvas(id) {
@@ -83,7 +96,9 @@ function setupCanvas(id) {
     const start = (e) => {
         drawing = true;
         ctx.beginPath();
-        ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--stroke-color').trim();
+        // ダークモード対応のストローク色取得
+        const color = getComputedStyle(document.body).getPropertyValue('--stroke-color').trim() || '#333';
+        ctx.strokeStyle = color;
         const p = getPos(e);
         ctx.moveTo(p.x, p.y);
     };
@@ -106,8 +121,9 @@ function setupCanvas(id) {
 function mark(index, isCorrect) {
     results[index] = isCorrect;
     const area = document.getElementById(`check-area-${index}`);
-    area.querySelectorAll('.check-btn')[0].classList.toggle('active', isCorrect === true);
-    area.querySelectorAll('.check-btn')[1].classList.toggle('active', isCorrect === false);
+    const buttons = area.querySelectorAll('.check-btn');
+    buttons[0].classList.toggle('active', isCorrect === true);
+    buttons[1].classList.toggle('active', isCorrect === false);
     updateScore();
 }
 
