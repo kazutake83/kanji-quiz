@@ -1,52 +1,37 @@
 let allQuestions = [];
+let results = []; // ○×の結果を保存する
 
-// 1. ページが読み込まれたら自動的にCSVを取得する
+// ダークモードの切り替え
+function toggleDarkMode() {
+    const isDark = document.getElementById('dark-mode-toggle').checked;
+    document.body.classList.toggle('dark-mode', isDark);
+}
+
+// CSV読み込み部分は前回と同じ（略）
 window.addEventListener('DOMContentLoaded', async () => {
     try {
         const response = await fetch('questions.csv');
-        if (!response.ok) throw new Error('CSVファイルが見つかりません');
-        
         const text = await response.text();
-        
-        // 改行コード（Windows/Mac両対応）で分割し、余計な空白を消す
         const rows = text.trim().split(/\r?\n/);
-        
-        // ★修正ポイント：1行目(見出し)を確実に飛ばし、空の行も完全に除外する
-        allQuestions = rows
-            .slice(1) // 1行目(number,yomi,kanji)を捨てる
-            .filter(row => row.trim() !== "" && row.includes(',')) // 空行やカンマのない行を捨てる
-            .map(row => {
-                const parts = row.split(',');
-                return {
-                    yomi: parts[1] ? parts[1].trim() : "",
-                    kanji: parts[2] ? parts[2].trim() : ""
-                };
-            });
-
-        console.log("読み込み成功。問題数:", allQuestions.length);
-    } catch (e) {
-        console.error("エラー:", e);
-    }
+        allQuestions = rows.slice(1).filter(row => row.includes(',')).map(row => {
+            const parts = row.split(',');
+            return { yomi: parts[1], kanji: parts[2] };
+        });
+    } catch (e) { console.error(e); }
 });
 
-// 2. テスト開始ボタンの処理
 function startTest() {
-    if (allQuestions.length === 0) {
-        alert("データ読み込み中です。数秒待ってからもう一度押してください。");
-        return;
-    }
-
     const startVal = parseInt(document.getElementById('range-start').value) - 1;
     const endVal = parseInt(document.getElementById('range-end').value);
     const countVal = parseInt(document.getElementById('question-count').value);
 
-    // 範囲指定とシャッフル
     let selected = allQuestions.slice(startVal, endVal);
     selected.sort(() => Math.random() - 0.5);
     selected = selected.slice(0, countVal);
 
     const listEl = document.getElementById('questions-list');
     listEl.innerHTML = "";
+    results = new Array(selected.length).fill(null); // 結果配列をリセット
     
     selected.forEach((q, index) => {
         const div = document.createElement('div');
@@ -58,6 +43,10 @@ function startTest() {
             </div>
             <canvas id="canvas-${index}" width="500" height="150"></canvas>
             <div class="ans-text" id="ans-${index}">${q.kanji}</div>
+            <div class="check-controls" id="check-area-${index}" style="display:none;">
+                <button class="check-btn btn-ok" onclick="mark(${index}, true)">◯</button>
+                <button class="check-btn btn-ng" onclick="mark(${index}, false)">×</button>
+            </div>
         `;
         listEl.appendChild(div);
         setupCanvas(`canvas-${index}`);
@@ -67,15 +56,19 @@ function startTest() {
     document.getElementById('finish-btn').style.display = 'block';
 }
 
-// 3. キャンバス（手書き）の設定
 function setupCanvas(id) {
     const canvas = document.getElementById(id);
     const ctx = canvas.getContext('2d');
     let drawing = false;
 
+    // ペンの色はモードによって変える
+    const updateStrokeColor = () => {
+        ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--stroke-color');
+    };
+
     ctx.lineWidth = 4;
     ctx.lineCap = 'round';
-    ctx.strokeStyle = '#333';
+    updateStrokeColor();
 
     const getPos = (e) => {
         const rect = canvas.getBoundingClientRect();
@@ -87,34 +80,40 @@ function setupCanvas(id) {
         };
     };
 
-    const start = (e) => { drawing = true; ctx.beginPath(); const p = getPos(e); ctx.moveTo(p.x, p.y); };
-    const move = (e) => { 
-        if (!drawing) return; 
-        const p = getPos(e); 
-        ctx.lineTo(p.x, p.y); 
-        ctx.stroke(); 
-        if (e.touches) e.preventDefault(); 
-    };
-    const stop = () => { drawing = false; };
-
-    canvas.addEventListener('mousedown', start);
-    canvas.addEventListener('mousemove', move);
-    window.addEventListener('mouseup', stop);
-    canvas.addEventListener('touchstart', start, {passive: false});
-    canvas.addEventListener('touchmove', move, {passive: false});
-    canvas.addEventListener('touchend', stop);
+    canvas.addEventListener('mousedown', (e) => { drawing = true; ctx.beginPath(); updateStrokeColor(); const p = getPos(e); ctx.moveTo(p.x, p.y); });
+    canvas.addEventListener('mousemove', (e) => { if (!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); });
+    window.addEventListener('mouseup', () => drawing = false);
+    
+    // タッチ操作（スマホ）用
+    canvas.addEventListener('touchstart', (e) => { drawing = true; ctx.beginPath(); updateStrokeColor(); const p = getPos(e); ctx.moveTo(p.x, p.y); e.preventDefault(); }, {passive: false});
+    canvas.addEventListener('touchmove', (e) => { if (!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); e.preventDefault(); }, {passive: false});
+    canvas.addEventListener('touchend', () => drawing = false);
 }
 
-// 4. その他のボタン処理
-function clearCanvas(index) {
-    const canvas = document.getElementById(`canvas-${index}`);
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+// 自己採点
+function mark(index, isCorrect) {
+    results[index] = isCorrect;
+    const area = document.getElementById(`check-area-${index}`);
+    area.querySelectorAll('.check-btn')[0].classList.toggle('active', isCorrect === true);
+    area.querySelectorAll('.check-btn')[1].classList.toggle('active', isCorrect === false);
+    updateScore();
+}
+
+function updateScore() {
+    const correctCount = results.filter(r => r === true).length;
+    document.getElementById('score-text').innerText = `結果：${results.length}問中 ${correctCount}問正解！`;
 }
 
 function finishTest() {
     document.querySelectorAll('.ans-text').forEach(el => el.style.display = 'block');
+    document.querySelectorAll('.check-controls').forEach(el => el.style.display = 'flex');
     document.getElementById('finish-btn').style.display = 'none';
-    document.getElementById('reset-btn').style.display = 'block';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.getElementById('score-container').style.display = 'block';
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+}
+
+function clearCanvas(index) {
+    const canvas = document.getElementById(`canvas-${index}`);
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
