@@ -1,41 +1,47 @@
-let allQuestions = []; // ここにCSVの中身が入ります
+let allQuestions = [];
 
-// ページが開かれたら自動でCSVを読み込む
+// 1. ページが読み込まれたら自動的にCSVを取得する
 window.addEventListener('DOMContentLoaded', async () => {
     try {
-        const response = await fetch('kanji_questions.csv'); // CSVファイルを取得
-        const data = await response.text();
+        // GitHubにアップした questions.csv を読み込む
+        // ※ fetchは同じフォルダ内のファイルを探しに行きます
+        const response = await fetch('questions.csv');
+        if (!response.ok) throw new Error('CSVファイルが見つかりません');
         
-        // CSVのテキストを行ごとに分解して配列に入れる
-        const lines = data.split('\n');
-        // 1行目はヘッダー(yomi, kanji)なので飛ばす
-        for (let i = 1; i < lines.length; i++) {
-            const line = lines[i].split(',');
-            if (line.length === 2) {
-                allQuestions.push({
-                    yomi: line[0].trim(),
-                    kanji: line[1].trim()
-                });
-            }
-        }
-        console.log("CSVの読み込みが完了しました:", allQuestions);
-    } catch (error) {
-        console.error("CSVの読み込みに失敗しました:", error);
+        const text = await response.text();
+        
+        // テキストを行ごとに分解
+        const rows = text.trim().split('\n');
+        
+        // 1行目（ヘッダー）を飛ばして、データを配列に入れる
+        allQuestions = rows.slice(1).map(row => {
+            // カンマで分割。 [番号, 問題文, 漢字] の順番を想定
+            const parts = row.split(',');
+            return {
+                yomi: parts[1] ? parts[1].trim() : "",
+                kanji: parts[2] ? parts[2].trim() : ""
+            };
+        }).filter(q => q.yomi !== ""); // 空の行を除去
+
+        console.log("問題の読み込みに成功しました！", allQuestions);
+    } catch (e) {
+        console.error("データの読み込み中にエラーが発生しました:", e);
+        alert("問題データの読み込みに失敗しました。GitHubに questions.csv があるか確認してください。");
     }
 });
 
-// --- startTest などの他の関数は、前のコードと全く同じでOKです ---
-
+// 2. テスト開始ボタンの処理
 function startTest() {
     if (allQuestions.length === 0) {
-        alert("問題データがまだ読み込まれていません。少し待ってからお試しください。");
+        alert("データ読み込み中です。数秒待ってからもう一度押してください。");
         return;
     }
-    
+
     const startVal = parseInt(document.getElementById('range-start').value) - 1;
     const endVal = parseInt(document.getElementById('range-end').value);
     const countVal = parseInt(document.getElementById('question-count').value);
 
+    // 範囲指定とシャッフル
     let selected = allQuestions.slice(startVal, endVal);
     selected.sort(() => Math.random() - 0.5);
     selected = selected.slice(0, countVal);
@@ -62,8 +68,7 @@ function startTest() {
     document.getElementById('finish-btn').style.display = 'block';
 }
 
-// setupCanvas, clearCanvas, finishTest は以前のものをそのまま下に貼り付けてください
-
+// 3. キャンバス（手書き）の設定
 function setupCanvas(id) {
     const canvas = document.getElementById(id);
     const ctx = canvas.getContext('2d');
@@ -101,6 +106,7 @@ function setupCanvas(id) {
     canvas.addEventListener('touchend', stop);
 }
 
+// 4. その他のボタン処理
 function clearCanvas(index) {
     const canvas = document.getElementById(`canvas-${index}`);
     const ctx = canvas.getContext('2d');
@@ -111,4 +117,5 @@ function finishTest() {
     document.querySelectorAll('.ans-text').forEach(el => el.style.display = 'block');
     document.getElementById('finish-btn').style.display = 'none';
     document.getElementById('reset-btn').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
