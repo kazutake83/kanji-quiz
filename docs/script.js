@@ -1,14 +1,9 @@
 let allQuestions = [];
-let results = []; // ○×の結果を保存する
+let results = [];
 
-// ダークモードの切り替え
-function toggleDarkMode() {
-    const isDark = document.getElementById('dark-mode-toggle').checked;
-    document.body.classList.toggle('dark-mode', isDark);
-}
-
-// CSV読み込み部分は前回と同じ（略）
+// ページ読み込み時の処理
 window.addEventListener('DOMContentLoaded', async () => {
+    // 1. CSV読み込み
     try {
         const response = await fetch('questions.csv');
         const text = await response.text();
@@ -17,7 +12,19 @@ window.addEventListener('DOMContentLoaded', async () => {
             const parts = row.split(',');
             return { yomi: parts[1], kanji: parts[2] };
         });
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error("CSV読み込みエラー", e); }
+
+    // 2. ダークモード切り替えイベント
+    const darkToggle = document.getElementById('dark-mode-toggle');
+    darkToggle.addEventListener('change', () => {
+        document.body.classList.toggle('dark-mode', darkToggle.checked);
+    });
+
+    // 3. テスト開始ボタン
+    document.getElementById('start-btn').addEventListener('click', startTest);
+    
+    // 4. 答え合わせボタン
+    document.getElementById('finish-btn').addEventListener('click', finishTest);
 });
 
 function startTest() {
@@ -31,14 +38,14 @@ function startTest() {
 
     const listEl = document.getElementById('questions-list');
     listEl.innerHTML = "";
-    results = new Array(selected.length).fill(null); // 結果配列をリセット
+    results = new Array(selected.length).fill(null);
     
     selected.forEach((q, index) => {
         const div = document.createElement('div');
         div.className = 'question-item';
         div.innerHTML = `
             <div class="question-header">
-                <div class="yomi">${q.yomi}</div>
+                <div class="yomi"><strong>${q.yomi}</strong></div>
                 <button class="clear-btn" onclick="clearCanvas(${index})">消去</button>
             </div>
             <canvas id="canvas-${index}" width="500" height="150"></canvas>
@@ -61,36 +68,41 @@ function setupCanvas(id) {
     const ctx = canvas.getContext('2d');
     let drawing = false;
 
-    // ペンの色はモードによって変える
-    const updateStrokeColor = () => {
-        ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--stroke-color');
-    };
-
     ctx.lineWidth = 4;
     ctx.lineCap = 'round';
-    updateStrokeColor();
 
     const getPos = (e) => {
         const rect = canvas.getBoundingClientRect();
         const scaleX = canvas.width / rect.width;
         const scaleY = canvas.height / rect.height;
-        return {
-            x: ((e.clientX || (e.touches && e.touches[0].clientX)) - rect.left) * scaleX,
-            y: ((e.clientY || (e.touches && e.touches[0].clientY)) - rect.top) * scaleY
-        };
+        const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+        const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+        return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
     };
 
-    canvas.addEventListener('mousedown', (e) => { drawing = true; ctx.beginPath(); updateStrokeColor(); const p = getPos(e); ctx.moveTo(p.x, p.y); });
-    canvas.addEventListener('mousemove', (e) => { if (!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); });
+    const start = (e) => {
+        drawing = true;
+        ctx.beginPath();
+        ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--stroke-color').trim();
+        const p = getPos(e);
+        ctx.moveTo(p.x, p.y);
+    };
+    const move = (e) => {
+        if (!drawing) return;
+        const p = getPos(e);
+        ctx.lineTo(p.x, p.y);
+        ctx.stroke();
+        if (e.touches) e.preventDefault();
+    };
+
+    canvas.addEventListener('mousedown', start);
+    canvas.addEventListener('mousemove', move);
     window.addEventListener('mouseup', () => drawing = false);
-    
-    // タッチ操作（スマホ）用
-    canvas.addEventListener('touchstart', (e) => { drawing = true; ctx.beginPath(); updateStrokeColor(); const p = getPos(e); ctx.moveTo(p.x, p.y); e.preventDefault(); }, {passive: false});
-    canvas.addEventListener('touchmove', (e) => { if (!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); e.preventDefault(); }, {passive: false});
+    canvas.addEventListener('touchstart', start, {passive: false});
+    canvas.addEventListener('touchmove', move, {passive: false});
     canvas.addEventListener('touchend', () => drawing = false);
 }
 
-// 自己採点
 function mark(index, isCorrect) {
     results[index] = isCorrect;
     const area = document.getElementById(`check-area-${index}`);
