@@ -2,45 +2,53 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>漢字テスト対策</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>漢字手書きテスト</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="test-container">
-        <h1>漢字テスト対策</h1>
-        
+    <div class="container">
+        <div class="header-area">
+            <h1>漢字手書きテスト</h1>
+            <label class="switch">
+                <input type="checkbox" id="dark-mode-toggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+
         <div id="settings" class="card">
-            <p class="instruction">範囲、問題数を決めて開始してください。ダークモードで実施したい方はチェックしてください。</p>
-            <div class="setting-row">
-                <span>範囲:</span>
-                <input type="number" id="range-start" value="1"> 〜 
-                <input type="number" id="range-end" value="375">
+            <h2>テスト設定</h2>
+            
+            <div class="setting-item">
+                <label>出題範囲（開始）：</label>
+                <select id="range-start-chapter"></select> 章 
+                <select id="range-start-num"></select> 番
             </div>
-            <div class="setting-row">
-                <span>問題数:</span>
-                <input type="number" id="question-count" value="20">
+
+            <div class="setting-item">
+                <label>出題範囲（終了）：</label>
+                <select id="range-end-chapter"></select> 章 
+                <select id="range-end-num"></select> 番
             </div>
-            <div class="setting-row">
-                <label class="dark-mode-switch">
-                    <input type="checkbox" id="dark-mode-toggle"> ダークモード
-                </label>
+
+            <div class="setting-item">
+                <label>出題問題数：</label>
+                <input type="number" id="question-count" value="10" min="1"> 問
             </div>
-            <button id="start-btn">テスト開始！</button>
+
+            <button id="start-btn" class="btn">テスト開始</button>
         </div>
 
         <div id="questions-list"></div>
 
-        <div class="footer-controls">
-            <button id="finish-btn" class="main-btn" style="display:none;">答え合わせをする</button>
-            
-            <div id="score-container" style="display:none;" class="card">
-                <h2 id="score-text">結果：採点中...</h2>
-                <p style="font-size: 14px; opacity: 0.8;">※○か×を押して採点してください</p>
-                <button class="main-btn" onclick="location.reload()">もう一度テストする</button>
-            </div>
+        <button id="finish-btn" class="btn" style="display:none;">答え合わせ</button>
+
+        <div id="score-container" class="card" style="display:none;">
+            <h2 id="score-text"></h2>
+            <button onclick="location.reload()" class="btn">もう一度やる</button>
         </div>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>
