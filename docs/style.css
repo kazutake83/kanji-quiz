@@ -58,10 +58,12 @@ h1 {
    テスト設定カード（#settings）
    ========================================================================== */
 #settings {
-    max-width: 700px; /* 青枠のイメージに合わせて広く */
+    max-width: 900px; /* 青枠のイメージに合わせて広く */
     width: 90%;
     margin: 30px auto;
     padding: 40px; /* 内側の余白をゆったり */
+    padding-right: 40px;
+    padding-left: 40px;
     box-sizing: border-box;
 }
 
