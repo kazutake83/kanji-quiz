@@ -54,133 +54,293 @@ h1 {
     transition: background-color 0.3s;
 }
 
-/* --- 設定エリア --- */
+/* ==========================================================================
+   テスト設定カード（#settings）
+   ========================================================================== */
 #settings {
-    text-align: center;
+    max-width: 700px; /* 青枠のイメージに合わせて広く */
+    width: 90%;
+    margin: 30px auto;
+    padding: 40px; /* 内側の余白をゆったり */
+    box-sizing: border-box;
 }
 
-.setting-row {
-    margin: 15px 0;
+#settings h2 {
+    margin-top: 0;
+    margin-bottom: 30px;
+    text-align: center;
+    font-size: 24px;
+}
+
+/* 各設定行（左右に引き離して配置） */
+.setting-item {
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+/* 「出題範囲：」などのラベル表示 */
+.setting-label {
+    font-weight: bold;
+    font-size: 16px;
+    text-align: left;
+    flex: 1;
+}
+
+/* プルダウンや数値入力が並ぶボックス（右寄せ） */
+.setting-inputs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: flex-end;
+    flex: 1.5;
+}
+
+/* プルダウンと入力ボックスの見た目 */
+select, input[type="number"] {
+    padding: 10px 15px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background-color: white;
+    font-size: 16px;
+    min-width: 80px;
+    text-align: center;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
 }
 
 input[type="number"] {
-    width: 70px;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 16px;
-    text-align: center;
-    background: var(--canvas-bg);
-    color: var(--text-color);
+    width: 80px;
 }
 
-.dark-mode-switch {
-    display: inline-block;
-    margin: 10px 0;
-    font-weight: bold;
+/* ダークモード切り替え行 */
+.dark-mode-row {
+    margin-top: 35px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+body.dark-mode .dark-mode-row {
+    border-top-color: #444;
+}
+
+.dark-mode-text {
+    font-size: 14px;
+    color: #555;
     cursor: pointer;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
 }
 
-/* --- ボタンデザイン（復活版） --- */
-#start-btn, .main-btn {
-    display: block;
+body.dark-mode .dark-mode-text {
+    color: #ccc;
+}
+
+/* テスト開始ボタンを大きく */
+#start-btn {
     width: 100%;
-    max-width: 400px;
-    margin: 25px auto;
     padding: 15px;
-    border-radius: 30px; /* 丸みのあるデザイン */
-    background-color: var(--accent-color);
-    color: white;
-    border: none;
     font-size: 18px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    transition: 0.3s;
+    margin-top: 20px;
 }
 
-#start-btn:hover, .main-btn:hover {
-    background-color: var(--accent-hover);
-    transform: translateY(-2px);
+
+/* ==========================================================================
+   問題表示エリア（テスト中画面）
+   ========================================================================== */
+#questions-list {
+    margin-top: 20px;
 }
 
-/* --- 問題表示エリア --- */
+/* 各問題のカード */
+.question-item {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    max-width: 600px;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+/* 問題のヘッダー（問題文と消去ボタン） */
 .question-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 
+/* 問題文（カタカナ部分などの装飾含む） */
 .yomi {
     font-size: 20px;
-    font-weight: bold;
+    line-height: 1.4;
+    word-break: break-all;
 }
 
+.yomi b {
+    font-size: 24px;
+    color: #ff4757; /* 目立たせる赤色 */
+}
+
+body.dark-mode .yomi b {
+    color: #ff6b81;
+}
+
+/* 手書きキャンバス（枠線とレスポンシブ対応） */
+canvas {
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    background-color: #ffffff;
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto 15px auto;
+    touch-action: none; /* スマホでのスクロール誤動作防止 */
+}
+
+body.dark-mode canvas {
+    border-color: #555;
+}
+
+/* 消去ボタンのスタイル */
 .clear-btn {
-    background: #6c757d;
+    background-color: #747d8c;
     color: white;
     border: none;
-    padding: 6px 15px;
-    border-radius: 6px;
+    padding: 6px 12px;
+    border-radius: 5px;
     cursor: pointer;
     font-size: 14px;
 }
 
-/* --- 手書きキャンバス --- */
-canvas {
-    background-color: var(--canvas-bg);
-    border: 2px solid var(--canvas-border);
-    border-radius: 8px;
-    display: block;
-    width: 100%;
-    touch-action: none; /* スマホでスクロールさせない */
+.clear-btn:hover {
+    background-color: #57606f;
 }
 
-/* --- 答え合わせと採点 --- */
+/* 答えの漢字（初期状態は非表示、答え合わせ後に表示） */
 .ans-text {
-    margin-top: 15px;
-    font-size: 26px;
+    font-size: 48px;
     font-weight: bold;
-    color: #d9534f;
-    display: none;
     text-align: center;
-    border-top: 1px dashed #ccc;
-    padding-top: 10px;
+    margin: 20px 0;
+    color: #2f3542;
+    display: none; /* JSで制御 */
 }
 
+body.dark-mode .ans-text {
+    color: #f1f2f6;
+}
+
+
+/* ==========================================================================
+   自己採点ボタン（◯ × ボタン）
+   ========================================================================== */
 .check-controls {
-    display: flex;
+    display: none; /* 初期は非表示（JSで制御） */
     justify-content: center;
-    gap: 20px;
+    gap: 30px;
     margin-top: 15px;
 }
 
 .check-btn {
-    font-size: 24px;
-    padding: 10px 45px;
-    border: none;
-    border-radius: 10px;
+    width: 70px;
+    height: 70px;
+    font-size: 32px;
+    font-weight: bold;
+    border: 3px solid transparent;
+    border-radius: 50%;
     cursor: pointer;
-    background: #e0e0e0;
-    color: #333;
-    transition: 0.2s;
+    background-color: #f1f2f6;
+    transition: all 0.2s;
 }
 
-.btn-ok.active { background: #28a745; color: white; }
-.btn-ng.active { background: #dc3545; color: white; }
+/* 各ボタンの通常カラー */
+.btn-ok { color: #2ed573; border-color: #2ed573; }
+.btn-ng { color: #ff4757; border-color: #ff4757; }
 
-/* スコア表示 */
+/* ホバー時の演出（PC） */
+.btn-ok:hover { background-color: #2ed573; color: white; }
+.btn-ng:hover { background-color: #ff4757; color: white; }
+
+/* 選択された（アクティブ）状態の見た目 */
+.btn-ok.active {
+    background-color: #2ed573;
+    color: white;
+    box-shadow: 0 0 10px rgba(46, 213, 115, 0.5);
+}
+
+.btn-ng.active {
+    background-color: #ff4757;
+    color: white;
+    box-shadow: 0 0 10px rgba(255, 71, 87, 0.5);
+}
+
+
+/* ==========================================================================
+   結果表示エリア（スコアコンテナ）
+   ========================================================================== */
 #score-container {
+    max-width: 500px;
+    width: 90%;
+    margin: 30px auto;
     text-align: center;
-    border: 3px solid var(--accent-color);
+    padding: 30px;
 }
 
 #score-text {
-    font-size: 26px;
-    color: var(--accent-color);
-    margin: 10px 0;
+    font-size: 24px;
+    color: #2f3542;
+    margin-bottom: 20px;
+}
+
+body.dark-mode #score-text {
+    color: #f1f2f6;
+}
+
+
+/* ==========================================================================
+   トグルスイッチ（ダークモード用）
+   ========================================================================== */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px; width: 18px;
+    left: 4px; bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+    transform: translateX(24px);
 }
